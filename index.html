@@ -23,19 +23,24 @@
 <body>
 
 <div class = "container-fluid">
-	<div class = "well" id="gif-buttons">
+	<div class = "well">
 	<h1>GIF BUTTONS</h1>
-
+	<div id="gif-buttons">
+	</div>
 	</div>
 </div>
 
 <div class = "container-fluid">
 	<div class = "row">
-
+	
 		<div class = "col-md-8">
-			<div class = "well" id="gif-images">
-			<h1>GIF IMAGES</h1>
-
+			<div class = "panel panel-default">
+				<div class = "panel-heading">
+					<h1>GIF IMAGES</h1>
+				</div>
+				<div class = "panel-body">
+					<div id="gif-images"></div>
+				</div>
 			</div>
 		</div>
 
@@ -46,7 +51,7 @@
 	                <label>Gif Search Term:</label>
 	                <input type="text" class="form-control" id="search">
 	            </div>
-	            <button type="button" class="btn btn-primary" id="searchBtn">Git Giphy</button>
+	            <button type="submit" class="btn btn-primary" id="submitGIF">Make a Giphhy button!</button>
 			</div>
 		</div>
 
@@ -60,18 +65,100 @@
 
 <script type="text/javascript">
 
-$(document).ready(function(){
+var topics = ["pug", "dalmatian", "retriever", "bulldog", "chihuahua"];
+
+function clearButtons(){
+	$("#gif-buttons").empty();
+}
+
+
+function makeButtons(){
+	for(var i = 0; i <  topics.length; i++){
+		var btnMaker = $("<button>");
+		btnMaker.attr("data-name", topics[i]);
+		btnMaker.text(topics[i]);
+		btnMaker.attr("type", "button");
+		btnMaker.addClass("btn btn-info");
+		$("#gif-buttons").append(btnMaker);
+	}
+}
 	
-	$("#searchBtn").on("click", function(){
-		// event.preventDefault();
-		var userEntry = $("#search").val().trim();
-		var gifBtn = $("<button type='button' class='btn btn-info'>");
-		gifBtn.text(userEntry);
-		$("#gif-buttons").append(gifBtn);
+$("#submitGIF").on("click", function(){
+	event.preventDefault();
+	var userEntry = $("#search").val().trim();
+	topics.push(userEntry);
+	clearButtons();
+	makeButtons();
+
+});
+
+
+
+$(document).on("click", ".btn-info", function(){ 
+	var gifSelect = $(this).text();
+
+	// Log the text of the button user selected
+	// console.log(gifSelect);
+	//Push that value to the api link
+	var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=dc6zaTOxFJmzC&limit=10&q=" + gifSelect;
+
+	$.ajax({
+		url: queryURL,
+		method: "GET"
+	})
+	.done(function(response){
+		for(var j = 0; j < response.data.length; j++){
+			//create divs to hold both rating and images
+			//create the div 
+			var imgDiv = $("<div>");
+			//add class for CSS formatting
+			imgDiv.addClass("images-divs");
+			//publish the rating of the gif in the div
+			imgDiv.append("<h2> Rating: " + response.data[j].rating + "</h2>");
+			
+			//create img tags to hold the gif images
+			var gifImg = $("<img>");
+
+			//set src and attributes of gif images
+			//original source is the still of the gif
+			gifImg.attr("src", response.data[j].images.fixed_height_still.url);
+			//creating a data type to hold the still image and applying the attribute
+			var stopURL = response.data[j].images.fixed_height_still.url;
+			gifImg.attr("data-stillURL", stopURL);
+			gifImg.attr("data-status", "still");
+			//creating a data type to hold the moving gif and applying the attribute
+			var playURL = response.data[j].images.fixed_height.url
+			gifImg.attr("data-playURL", playURL);
+
+			//append the img to the div created earlier
+			imgDiv.append(gifImg);
+
+			//prepend all the images to the gif images panel
+			$("#gif-images").prepend(imgDiv);
+		}
+
+		$("img").on("click", function(){
+			var gifStatus = $(this).attr("data-status");
+			if(gifStatus === "still"){
+				var playAGif = $(this).attr("data-playURL");
+				$(this).attr("data-status", "play");
+				$(this).attr("src", playAGif);
+			} 
+			if (gifStatus === "play"){
+				var stopAGif = $(this).attr("data-stillURL");
+				$(this).attr("data-status", "still");
+				$(this).attr("src", stopAGif);
+			}
+
+		})
 
 	});
 
+
 });
+
+makeButtons();
+
 
 </script>
 </body>
