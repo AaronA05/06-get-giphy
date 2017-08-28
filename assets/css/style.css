@@ -2,3 +2,11 @@ div.images-divs{
 	float: left;
 	margin: 5px;
 }
+
+button.btn-primary{
+	margin: 5px;
+}
+
+button.btn-info{
+	margin: 2px;
+}

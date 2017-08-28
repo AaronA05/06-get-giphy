@@ -1,6 +1,6 @@
 
 //initial list of buttons, user submission will push into this array
-var topics = ["pug", "dalmatian", "retriever", "bulldog", "chihuahua"];
+var topics = ["dog", "lion", "hyena", "giraffe", "snake"];
 
 //function to prevent duplicaiton of buttons when a new one is created
 function clearButtons(){
@@ -34,13 +34,16 @@ $("#submitGIF").on("click", function(){
 
 });
 
-
 //when user clicks on Clear the gifs it will empty the gifs image panel
 $("#clear-images").on("click", function(){
 	clearImages();
-
 });
 
+//when user clicks on clear the buttons it will clear gif buttons on site and reset array
+$("#clear-buttons").on("click", function(){
+	clearButtons();
+	topics = [];
+});
 
 //when user clicks on one of the buttons created by the program or the user it will run this function
 $(document).on("click", ".btn-info", function(){ 
